@@ -259,14 +259,17 @@ bitmap_all(const struct bitmap *b, size_t start, size_t cnt) {
 /* Expand Bitmap by size */
 struct bitmap *
 bitmap_expand(struct bitmap *bitmap, int size) {
+    ASSERT(bitmap != NULL);
+
     size_t before_elem_cnt = elem_cnt(bitmap->bit_cnt);
     size_t after_elem_cnt = elem_cnt(size) + before_elem_cnt;
 
-    elem_type *after_elem = (elem_type *) malloc(sizeof(elem_type) * after_elem_cnt);
-    for (int i = 0; i < elem_cnt(bitmap->bit_cnt); i++) {
-        after_elem[i] = bitmap->bits[i];
+    if (size <= 0) {
+        fprintf(stderr, "Size must be positive integer.\n");
+        return NULL;
     }
-    free(bitmap->bits);
+
+    elem_type *after_elem = (elem_type *) realloc(bitmap->bits, sizeof(elem_type) * after_elem_cnt);
     bitmap->bit_cnt = size + bitmap->bit_cnt;
     bitmap->bits = after_elem;
     return bitmap;

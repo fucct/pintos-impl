@@ -16,7 +16,7 @@ struct data_name_map {
     struct bitmap *bitmap;
 };
 
-int getOperation(char *line);
+enum operation getOperation(char *line);
 
 struct list *getListByName(const struct data_name_map *data_map, const char *data_name);
 
@@ -24,13 +24,17 @@ struct bitmap *getBitmapByName(const struct data_name_map *name_table, const cha
 
 struct hash *getHashByName(const struct data_name_map *name_table, const char *data_name);
 
-int getDataStructure(const char *line);
+enum data_structure getDataStructure(const char *line);
 
 void printConsole(char *commandLine);
 
 enum list_operation getListOperation(const char *line);
 
-enum data_structure getDataType(const struct data_name_map *name_table, const char *data_name);
+enum bitmap_operation getBitmapOperation(const char *line);
+
+enum hash_operation getHashOperation(const char *line);
+
+enum data_structure getDataTypeByName(const struct data_name_map *name_table, const char *data_name);
 
 void createList(struct data_name_map name_table[10], const char *data_name, int *data_cnt);
 
@@ -50,9 +54,6 @@ void listPushFront(struct list *picked_list, const char *data);
 
 void listPushBack(struct list *picked_list, const char *data);
 
-void processListOperation(const struct data_name_map *data_name_table, const char *operation, char *args1, char *args2,
-                          char *args3);
-
 bool list_less(struct list_elem *elem1, struct list_elem *elem2, void *aux);
 
 void init_table(struct data_name_map *data_name_table);
@@ -62,28 +63,25 @@ void create_data(int *data_cnt, struct data_name_map *data_name_table, const cha
 
 void delete_data(int *data_cnt, struct data_name_map *data_name_table, const char *args1);
 
+void processListOperation(const struct data_name_map *data_name_table, const char *operation, char *args1, char *args2,
+                          char *args3);
+
 void processBitmapOperation(struct data_name_map data_name_table[10], char *operation, char *args1, char *args2,
                             char *args3);
 
-enum bitmap_operation getBitmapOperation(char *operation);
-
-enum hash_operation getHashOperation(char *operation);
+void
+processHashOperation(struct data_name_map data_name_table[10], char *operation, char *args1, char *args2, char *args3);
 
 bool getBoolean(char *args);
 
 void printBool(bool result);
 
-void getHashActionFunc(char *func_name);
-
 void square(struct hash_elem *elem, void *aux);
 
 void triple(struct hash_elem *elem, void *aux);
 
+
 void minus10(struct hash_elem *elem, void *aux);
-
-
-void
-processHashOperation(struct data_name_map data_name_table[10], char *operation, char *args1, char *args2, char *args3);
 
 unsigned hash_func(const struct hash_elem *e, void *aux);
 
@@ -210,7 +208,7 @@ void init_table(struct data_name_map *data_name_table) {
 
 void processListOperation(const struct data_name_map *data_name_table, const char *operation, char *args1, char *args2,
                           char *args3) {
-    enum data_structure dataType = getDataType(data_name_table, args1);
+    enum data_structure dataType = getDataTypeByName(data_name_table, args1);
     if (dataType != LIST) {
         fprintf(stderr, "%s is not a List. Please try again.\n", args1);
         return;
@@ -365,7 +363,7 @@ void processListOperation(const struct data_name_map *data_name_table, const cha
 
 void processBitmapOperation(struct data_name_map data_name_table[10], char *operation, char *args1, char *args2,
                             char *args3) {
-    enum data_structure dataType = getDataType(data_name_table, args1);
+    enum data_structure dataType = getDataTypeByName(data_name_table, args1);
     if (dataType != BITMAP) {
         fprintf(stderr, "%s is not a Bitmap. Please try again.\n", args1);
         return;
@@ -487,7 +485,7 @@ void processBitmapOperation(struct data_name_map data_name_table[10], char *oper
 
 void
 processHashOperation(struct data_name_map data_name_table[10], char *operation, char *args1, char *args2, char *args3) {
-    enum data_structure dataType = getDataType(data_name_table, args1);
+    enum data_structure dataType = getDataTypeByName(data_name_table, args1);
     if (dataType != HASH) {
         fprintf(stderr, "%s is not a HashTable. Please try again.\n", args1);
         return;
@@ -639,7 +637,7 @@ void listPushFront(struct list *picked_list, const char *data) {
 }
 
 void dumpData(const struct data_name_map *data_name_table, const char *data_name) {
-    enum data_structure data_type = getDataType(data_name_table, data_name);
+    enum data_structure data_type = getDataTypeByName(data_name_table, data_name);
     struct list *picked_list;
     struct bitmap *picked_bitmap;
     struct hash *picked_hash;
@@ -787,62 +785,62 @@ void createList(struct data_name_map name_table[10], const char *data_name, int 
     }
 }
 
-enum hash_operation getHashOperation(char *operation) {
-    if (strcmp(operation, "hash_apply") == 0) {
+enum hash_operation getHashOperation(const char *line) {
+    if (strcmp(line, "hash_apply") == 0) {
         return HASH_APPLY;
-    } else if (strcmp(operation, "hash_clear") == 0) {
+    } else if (strcmp(line, "hash_clear") == 0) {
         return HASH_CLEAR;
-    } else if (strcmp(operation, "hash_delete") == 0) {
+    } else if (strcmp(line, "hash_delete") == 0) {
         return HASH_DELETE;
-    } else if (strcmp(operation, "hash_empty") == 0) {
+    } else if (strcmp(line, "hash_empty") == 0) {
         return HASH_EMPTY;
-    } else if (strcmp(operation, "hash_find") == 0) {
+    } else if (strcmp(line, "hash_find") == 0) {
         return HASH_FIND;
-    } else if (strcmp(operation, "hash_insert") == 0) {
+    } else if (strcmp(line, "hash_insert") == 0) {
         return HASH_INSERT;
-    } else if (strcmp(operation, "hash_replace") == 0) {
+    } else if (strcmp(line, "hash_replace") == 0) {
         return HASH_REPLACE;
-    } else if (strcmp(operation, "hash_size") == 0) {
+    } else if (strcmp(line, "hash_size") == 0) {
         return HASH_SIZE;
     } else {
         return HASH_NOTHING;
     }
 }
 
-enum bitmap_operation getBitmapOperation(char *operation) {
-    if (strcmp(operation, "bitmap_mark") == 0) {
+enum bitmap_operation getBitmapOperation(const char *line) {
+    if (strcmp(line, "bitmap_mark") == 0) {
         return BITMAP_MARK;
-    } else if (strcmp(operation, "bitmap_all") == 0) {
+    } else if (strcmp(line, "bitmap_all") == 0) {
         return BITMAP_ALL;
-    } else if (strcmp(operation, "bitmap_any") == 0) {
+    } else if (strcmp(line, "bitmap_any") == 0) {
         return BITMAP_ANY;
-    } else if (strcmp(operation, "bitmap_contains") == 0) {
+    } else if (strcmp(line, "bitmap_contains") == 0) {
         return BITMAP_CONTAINS;
-    } else if (strcmp(operation, "bitmap_count") == 0) {
+    } else if (strcmp(line, "bitmap_count") == 0) {
         return BITMAP_COUNT;
-    } else if (strcmp(operation, "bitmap_dump") == 0) {
+    } else if (strcmp(line, "bitmap_dump") == 0) {
         return BITMAP_DUMP;
-    } else if (strcmp(operation, "bitmap_expand") == 0) {
+    } else if (strcmp(line, "bitmap_expand") == 0) {
         return BITMAP_EXPAND;
-    } else if (strcmp(operation, "bitmap_flip") == 0) {
+    } else if (strcmp(line, "bitmap_flip") == 0) {
         return BITMAP_FLIP;
-    } else if (strcmp(operation, "bitmap_none") == 0) {
+    } else if (strcmp(line, "bitmap_none") == 0) {
         return BITMAP_NONE;
-    } else if (strcmp(operation, "bitmap_reset") == 0) {
+    } else if (strcmp(line, "bitmap_reset") == 0) {
         return BITMAP_RESET;
-    } else if (strcmp(operation, "bitmap_scan") == 0) {
+    } else if (strcmp(line, "bitmap_scan") == 0) {
         return BITMAP_SCAN;
-    } else if (strcmp(operation, "bitmap_scan_and_flip") == 0) {
+    } else if (strcmp(line, "bitmap_scan_and_flip") == 0) {
         return BITMAP_SCAN_AND_FLIP;
-    } else if (strcmp(operation, "bitmap_set") == 0) {
+    } else if (strcmp(line, "bitmap_set") == 0) {
         return BITMAP_SET;
-    } else if (strcmp(operation, "bitmap_set_all") == 0) {
+    } else if (strcmp(line, "bitmap_set_all") == 0) {
         return BITMAP_SET_ALL;
-    } else if (strcmp(operation, "bitmap_set_multiple") == 0) {
+    } else if (strcmp(line, "bitmap_set_multiple") == 0) {
         return BITMAP_SET_MULTIPLE;
-    } else if (strcmp(operation, "bitmap_size") == 0) {
+    } else if (strcmp(line, "bitmap_size") == 0) {
         return BITMAP_SIZE;
-    } else if (strcmp(operation, "bitmap_test") == 0) {
+    } else if (strcmp(line, "bitmap_test") == 0) {
         return BITMAP_TEST;
     } else {
         return BITMAP_NOTHING;
@@ -899,7 +897,7 @@ void printConsole(char *commandLine) {
     getchar();
 }
 
-int getOperation(char *line) {
+enum operation getOperation(char *line) {
     if (strncmp(line, "create", 5) == 0) {
         return CREATE;
     } else if (strncmp(line, "delete", 6) == 0) {
@@ -919,7 +917,7 @@ int getOperation(char *line) {
     }
 }
 
-int getDataStructure(const char *line) {
+enum data_structure getDataStructure(const char *line) {
     if (strncmp(line, "list", 4) == 0) {
         return LIST;
     } else if (strncmp(line, "hash", 4) == 0) {
@@ -931,7 +929,7 @@ int getDataStructure(const char *line) {
     }
 }
 
-enum data_structure getDataType(const struct data_name_map *name_table, const char *data_name) {
+enum data_structure getDataTypeByName(const struct data_name_map *name_table, const char *data_name) {
     for (int i = 0; i < 10; i++) {
         if (strcmp(name_table[i].name, data_name) == 0) {
             if (name_table[i].list != NULL) {
