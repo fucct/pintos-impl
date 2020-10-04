@@ -1,0 +1,77 @@
+//
+// Created by mac on 2020/10/03.
+//
+
+enum data_structure {
+    LIST = 1,
+    HASH,
+    BITMAP,
+    NOTHING,
+};
+
+enum operation {
+    CREATE = 1,
+    DELETE,
+    DUMP_DATA,
+    BITMAP_OPERATION,
+    HASH_OPERATION,
+    LIST_OPERATION,
+    QUIT,
+    DEFAULT,
+};
+
+enum list_operation {
+    LIST_PUSH_FRONT = 1,
+    LIST_PUSH_BACK,
+    LIST_POP_FRONT,
+    LIST_POP_BACK,
+    LIST_INSERT,
+    LIST_INSERT_ORDERED,
+    LIST_FRONT,
+    LIST_BACK,
+    LIST_EMPTY,
+    LIST_SIZE,
+    LIST_MAX,
+    LIST_MIN,
+    LIST_REMOVE,
+    LIST_REVERSE,
+    LIST_SHUFFLE,
+    LIST_SORT,
+    LIST_SPLICE,
+    LIST_SWAP,
+    LIST_UNIQUE,
+    LIST_NOTHING
+};
+
+enum bitmap_operation {
+    BITMAP_MARK = 1,
+    BITMAP_ALL,
+    BITMAP_ANY,
+    BITMAP_NONE,
+    BITMAP_CONTAINS,
+    BITMAP_COUNT,
+    BITMAP_DUMP,
+    BITMAP_EXPAND,
+    BITMAP_FLIP,
+    BITMAP_RESET,
+    BITMAP_SCAN,
+    BITMAP_SCAN_AND_FLIP,
+    BITMAP_SET,
+    BITMAP_SET_ALL,
+    BITMAP_SET_MULTIPLE,
+    BITMAP_SIZE,
+    BITMAP_TEST,
+    BITMAP_NOTHING,
+};
+
+enum hash_operation {
+    HASH_INSERT = 1,
+    HASH_DELETE,
+    HASH_APPLY,
+    HASH_EMPTY,
+    HASH_SIZE,
+    HASH_CLEAR,
+    HASH_FIND,
+    HASH_REPLACE,
+    HASH_NOTHING,
+};
